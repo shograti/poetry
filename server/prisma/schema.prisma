@@ -12,3 +12,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  username    String        @unique
+  password    String
+  verses      Verse[]
+  votes       Vote[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  EditedVerse EditedVerse[]
+}
+
+model Verse {
+  id        Int           @id @default(autoincrement())
+  content   String        @db.VarChar(255)
+  userId    Int
+  user      User          @relation(fields: [userId], references: [id])
+  edits     EditedVerse[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model EditedVerse {
+  id         Int      @id @default(autoincrement())
+  originalId Int
+  content    String   @db.VarChar(255)
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  original   Verse    @relation(fields: [originalId], references: [id])
+  approved   Boolean  @default(false)
+  votes      Vote[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Vote {
+  id            Int         @id @default(autoincrement())
+  editedVerseId Int
+  userId        Int
+  isUpvote      Boolean
+  user          User        @relation(fields: [userId], references: [id])
+  editedVerse   EditedVerse @relation(fields: [editedVerseId], references: [id])
+  createdAt     DateTime    @default(now())
+}

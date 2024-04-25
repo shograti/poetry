@@ -12,5 +12,7 @@ export declare class AuthController {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    signIn(dto: SignInDto): Promise<any>;
+    signIn(dto: SignInDto): Promise<{
+        access_token: string;
+    }>;
 }
